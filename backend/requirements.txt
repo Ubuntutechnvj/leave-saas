@@ -9,3 +9,4 @@ fastapi-mail
 python-dateutil
 openpyxl
 python-multipart
+holidays
