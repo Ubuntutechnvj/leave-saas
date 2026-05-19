@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Employee Dashboard</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+}
+
+.header {
+    background: #0f5c29;
+    color: white;
+    padding: 16px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h2 { font-size: 18px; }
+
+.header button {
+    background: white;
+    color: #0f5c29;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.container { padding: 30px; }
+
+.cards {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.card {
+    flex: 1 1 160px;
+    min-width: 150px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+    font-size: 14px;
+    color: #000000;
+    margin-bottom: 10px;
+}
+
+.card .number {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0f5c29;
+}
+
+.card .sub {
+    font-size: 12px;
+    color: #000000;
+    margin-top: 4px;
+}
+
+.section {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+}
+
+.section h3 {
+    margin-bottom: 16px;
+    color: #000000;
+    font-size: 16px;
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-row .form-group {
+    min-width: 180px;
+    flex: 1;
+}
+
+.reason-group {
+    min-width: 300px;
+    flex: 2;
+}
+
+.days-group {
+    min-width: 140px;
+    max-width: 140px;
+}
+
+.form-group label {
+    font-size: 13px;
+    color: #555;
+}
+
+.form-group label {
+    font-size: 13px;
+    color: #000000;
+}
+
+select,
+input[type="date"],
+input[type="text"] {
+    padding: 9px 12px;
+    border: 1px solid #928989;
+    border-radius: 5px;
+    font-size: 14px;
+    background: white;
+}
+
+input[type="file"] {
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 13px;
+    background: white;
+}
+
+.btn {
+    background: #0f5c29;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.reason-box {
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    background: white;
+    resize: none;
+    overflow-y: auto;
+}
+
+textarea.reason-box {
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    line-height: 18px;
+}
+
+.btn:hover { background: #0a4520; }
+
+.view-note-btn {
+    background: #0f5c29;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.upload-note-btn {
+    background: #fff3cd;
+    color: #856404;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #0f5c29;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+td {
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+tr:hover td { background: #f9f9f9; }
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+td {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badge.PENDING  { background: #fff3cd; color: #856404; }
+.badge.APPROVED { background: #d1f5e0; color: #0f5c29; }
+.badge.REJECTED { background: #fde8e8; color: #c0392b; }
+
+.empty { text-align: center; color: #aaa; padding: 20px; }
+
+.hidden { display: none; }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2 id="welcome">Employee Dashboard</h2>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+
+    <div class="cards" id="leaveCards">
+        <p class="empty">Loading leave balances...</p>
+    </div>
+
+    <div class="section">
+        <h3>Apply For Leave</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Leave Type</label>
+                <select id="leaveType" onchange="toggleDoctorNote()">
+                    <option value="Annual">Annual</option>
+                    <option value="Sick">Sick</option>
+                    <option value="Family Responsibility">Family Responsibility</option>
+                    <option value="Study">Study</option>
+                    <option value="Unpaid">Unpaid</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" id="startDate" onchange="toggleDayPortion()">
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" id="endDate" onchange="toggleDayPortion()">
+            </div>
+            <div class="form-group">
+                <label>Leave Duration</label>
+                <select id="dayPortion">
+                    <option value="1">Full Day</option>
+                    <option value="0.5">Half Day</option>
+                    <option value="0.25">Quarter Day</option>
+                </select>
+            </div>
+            <div class="form-group days-group">
+                <label>Days Requested</label>
+                <input type="text" id="hrCalculatedDays" value="0" readonly>
+            </div>
+            <div class="form-group reason-group">
+                <label>Reason (Optional)</label>
+                <textarea id="leaveReason" class="reason-box" placeholder="Enter reason for leave..."></textarea>
+            </div>
+            <div class="form-group hidden" id="doctorNoteWrap">
+                <label>Doctor's Note</label>
+                <input type="file" id="doctorNote" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+            <button class="btn" onclick="applyLeave()">Submit Leave</button>
+        </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="btn" onclick="showEmployeeLeaveView('table')">Table View</button>
+        <button class="btn" onclick="showEmployeeLeaveView('calendar')">Calendar View</button>
+    </div>
+    <div class="section">
+        <h3>Your Leave Requests</h3>
+    <div id="employeeLeaveTableView">
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                    <th>Doctor's Note</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody id="requests">
+                <tr><td colspan="7" class="empty">Loading...</td></tr>
+            </tbody>
+        </table>
+        </div>
+        <div id="employeeLeaveCalendarView" class="hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <button class="btn" onclick="changeEmployeeCalendarMonth(-1)">← Previous</button>
+        <h3 id="employeeCalendarTitle"></h3>
+        <button class="btn" onclick="changeEmployeeCalendarMonth(1)">Next →</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+            </tr>
+        </thead>
+        <tbody id="employeeCalendarBody"></tbody>
+    </table>
+</div>
+</div>
+</div>
+<div class="section">
+        <h3>Stand-in Requests</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Days</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="standInRequests">
+                    <tr><td colspan="6" class="empty">Loading stand-in requests...</td></tr>
+                </tbody>
+            </table>
+    </div>
+
+<script>
+const BASE = "http://127.0.0.1:8000/api";
+const employee_id = localStorage.getItem("employee_id");
+const role = localStorage.getItem("role");
+const employee_name = localStorage.getItem("employee_name");
+const access_token = localStorage.getItem("access_token");
+
+window.onload = function () {
+    if (!employee_id || !access_token) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    if (!["employee", "supervisor", "manager", "admin", "hr"].includes(role)) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("welcome").innerText = "Welcome, " + (employee_name || "");
+
+    getBalance();
+    loadRequests();
+    loadStandInRequests();
+    toggleDoctorNote();
+    toggleDayPortion();
+};
+
+let employeeCalendarDate = new Date();
+let myLeaveRequests = [];
+
+function showEmployeeLeaveView(view) {
+    document.getElementById("employeeLeaveTableView").classList.toggle("hidden", view !== "table");
+    document.getElementById("employeeLeaveCalendarView").classList.toggle("hidden", view !== "calendar");
+
+    if (view === "calendar") renderEmployeeCalendar();
+}
+
+function changeEmployeeCalendarMonth(change) {
+    employeeCalendarDate.setMonth(employeeCalendarDate.getMonth() + change);
+    renderEmployeeCalendar();
+}
+
+function renderEmployeeCalendar() {
+    const year = employeeCalendarDate.getFullYear();
+    const month = employeeCalendarDate.getMonth();
+
+    document.getElementById("employeeCalendarTitle").innerText =
+        employeeCalendarDate.toLocaleString("default", { month: "long", year: "numeric" });
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    let startDay = firstDay.getDay();
+    startDay = startDay === 0 ? 6 : startDay - 1;
+
+    let html = "<tr>";
+
+    for (let i = 0; i < startDay; i++) {
+        html += "<td></td>";
+    }
+
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+        const currentDate = new Date(year, month, day);
+        const dateStr = currentDate.toISOString().split("T")[0];
+
+        const leavesToday = myLeaveRequests.filter(r =>
+            r.status === "APPROVED" &&
+            r.start_date <= dateStr &&
+            r.end_date >= dateStr
+        );
+
+        html += `<td style="vertical-align:top;height:90px;">
+            <strong>${day}</strong>
+            ${leavesToday.map(l => `
+                <div style="margin-top:5px;padding:4px;border-radius:4px;background:#d1f5e0;color:#0f5c29;font-size:12px;">
+                    ${l.leave_type}
+                </div>
+            `).join("")}
+        </td>`;
+
+        if ((startDay + day) % 7 === 0) html += "</tr><tr>";
+    }
+
+    html += "</tr>";
+    document.getElementById("employeeCalendarBody").innerHTML = html;
+}
+
+function calculateRequestedDays() {
+    const start = document.getElementById("startDate").value;
+    const end = document.getElementById("endDate").value;
+    const portion = parseFloat(document.getElementById("dayPortion").value);
+
+    const output = document.getElementById("hrCalculatedDays");
+
+    if (!start || !end) {
+        output.value = "0";
+        return;
+    }
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    if (endDate < startDate) {
+        output.value = "0";
+        return;
+    }
+
+    let count = 0;
+    let current = new Date(startDate);
+
+    while (current <= endDate) {
+        const day = current.getDay();
+
+        if (day !== 0 && day !== 6) {
+            count++;
+        }
+
+        current.setDate(current.getDate() + 1);
+    }
+
+    if (start === end) {
+        count = portion;
+    }
+
+    output.value = count;
+}
+
+document.getElementById("doctorNoteWrap").classList.add("hidden");
+document.getElementById("hrCalculatedDays").value = "0";
+document.getElementById("leaveReason").value = "";
+document.getElementById("startDate").addEventListener("change", calculateRequestedDays);
+document.getElementById("endDate").addEventListener("change", calculateRequestedDays);
+document.getElementById("dayPortion").addEventListener("change", calculateRequestedDays);
+
+
+function authHeaders(extra = {}) {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${access_token}`,
+        ...extra
+    };
+}
+
+function authHeadersNoContent() {
+    return {
+        "Authorization": `Bearer ${access_token}`
+    };
+}
+
+async function handleApiResponse(res) {
+    if (res.status === 401 || res.status === 403) {
+        try {
+            const data = await res.json();
+            if (
+                data.detail === "Could not validate credentials" ||
+                data.detail === "Your account has been deactivated. Please contact HR." ||
+                data.detail === "Not authenticated"
+            ) {
+                localStorage.clear();
+                window.location.href = "login.html";
+                throw new Error("Unauthorized");
+            }
+            return data;
+        } catch {
+            localStorage.clear();
+            window.location.href = "login.html";
+            throw new Error("Unauthorized");
+        }
+    }
+
+    return await res.json();
+}
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+async function loadStandInRequests() {
+    try {
+        const res = await fetch(`${BASE}/my-standin-requests`, {
+            headers: authHeaders()
+        });
+
+        const data = await handleApiResponse(res);
+
+        if (!res.ok) {
+            document.getElementById("standInRequests").innerHTML =
+                "<tr><td colspan='6' class='empty'>Failed to load stand-in requests</td></tr>";
+            return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+            document.getElementById("standInRequests").innerHTML =
+                "<tr><td colspan='6' class='empty'>No stand-in requests</td></tr>";
+            return;
+        }
+
+        document.getElementById("standInRequests").innerHTML = data.map(r => `
+            <tr>
+                <td>${r.employee_name}</td>
+                <td>${r.leave_type}</td>
+                <td>${r.start_date}</td>
+                <td>${r.end_date}</td>
+                <td>${Number(r.days).toFixed(2)}</td>
+                <td>
+                    <button class="btn" onclick="acceptStandIn(${r.id})">Accept</button>
+                    <button class="btn" style="background:#c0392b;" onclick="declineStandIn(${r.id})">Decline</button>
+                </td>
+            </tr>
+        `).join("");
+
+    } catch (error) {
+        console.error(error);
+        document.getElementById("standInRequests").innerHTML =
+            "<tr><td colspan='6' class='empty'>Failed to load stand-in requests</td></tr>";
+    }
+}
+
+async function acceptStandIn(id) {
+    const res = await fetch(`${BASE}/standin-request/${id}/accept`, {
+        method: "POST",
+        headers: authHeaders()
+    });
+
+    const data = await handleApiResponse(res);
+
+    if (!res.ok) {
+        alert(data.detail || "Failed to accept stand-in request");
+        return;
+    }
+
+    alert("Stand-in accepted successfully");
+    loadStandInRequests();
+}
+
+async function declineStandIn(id) {
+    const res = await fetch(`${BASE}/standin-request/${id}/decline`, {
+        method: "POST",
+        headers: authHeaders()
+    });
+
+    const data = await handleApiResponse(res);
+
+    if (!res.ok) {
+        alert(data.detail || "Failed to decline stand-in request");
+        return;
+    }
+
+    alert("Stand-in declined");
+    loadStandInRequests();
+}
+
+function toggleDoctorNote() {
+    const val = document.getElementById("leaveType").value;
+    const wrap = document.getElementById("doctorNoteWrap");
+
+    if (val === "Sick") {
+        wrap.classList.remove("hidden");
+    } else {
+        wrap.classList.add("hidden");
+        document.getElementById("doctorNote").value = "";
+    }
+}
+
+async function cancelLeave(id) {
+
+    if (!confirm("Are you sure you want to cancel this pending leave request?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`${BASE}/leave-request/${id}/cancel`, {
+            method: "DELETE",
+            headers: authHeadersNoContent()
+        });
+
+        const result = await handleApiResponse(response);
+
+        if (!response.ok) {
+            alert(result.detail || "Could not cancel leave");
+            return;
+        }
+
+        alert("Leave cancelled successfully");
+
+        loadRequests();
+        getBalance();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Server error while cancelling leave");
+    }
+}
+
+function toggleDayPortion() {
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const dayPortion = document.getElementById("dayPortion");
+
+    if (startDate && endDate && startDate === endDate) {
+        dayPortion.disabled = false;
+    } else {
+        dayPortion.value = "1";
+        dayPortion.disabled = true;
+    }
+}
+
+async function getBalance() {
+    try {
+        const res = await fetch(`${BASE}/my-leave-balance`, {
+            headers: authHeaders()
+        });
+
+        const data = await handleApiResponse(res);
+
+        if (!res.ok) {
+            alert(data.detail || "Failed to load leave balance");
+            return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+            document.getElementById("leaveCards").innerHTML = "<p class='empty'>No leave balances found</p>";
+            return;
+        }
+
+        if (!data.find(x => x.leave_type === "Study")) {
+            data.push({
+                leave_type: "Study",
+                allocated: 0,
+                used: 0,
+                remaining: 0
+            });
+        }
+
+        if (!data.find(x => x.leave_type === "Unpaid")) {
+            data.push({
+                leave_type: "Unpaid",
+                allocated: 0,
+                used: 0,
+                remaining: 0
+            });
+        }
+
+        document.getElementById("leaveCards").innerHTML = data.map(b => {
+            const isAnnual = b.leave_type === "Annual";
+            const fmt = (v) => isAnnual ? Number(v).toFixed(2) : v;
+
+            const remaining = fmt(b.remaining);
+            const allocated = fmt(b.allocated);
+            const used = fmt(b.used);
+
+            return `
+                <div class="card">
+                    <h3>${b.leave_type}</h3>
+                    <div class="number">${remaining}</div>
+                    <div class="sub">Remaining</div>
+                    <div class="sub" style="margin-top:8px">
+                        Allocated: ${allocated} &nbsp;|&nbsp; Used: ${used}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    } catch (error) {
+        if (error.message === "Unauthorized") return;
+        console.error(error);
+        document.getElementById("leaveCards").innerHTML = "<p class='empty'>Failed to load balances</p>";
+    }
+}
+
+async function loadRequests() {
+    try {
+        const res = await fetch(`${BASE}/my-leave-requests`, {
+            headers: authHeaders()
+        });
+
+        const data = await handleApiResponse(res);
+
+        if (!res.ok) {
+            alert(data.detail || "Failed to load leave requests");
+            return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+            document.getElementById("requests").innerHTML =
+                "<tr><td colspan='7' class='empty'>No leave requests yet</td></tr>";
+            return;
+        }
+        myLeaveRequests = data;
+        renderEmployeeCalendar();
+        document.getElementById("requests").innerHTML = data.map(r => {
+            const noteBtn = r.leave_type === "Sick"
+                ? r.doctor_note_path
+                    ? `<button class="view-note-btn" onclick="viewDoctorNote(${r.id})">View Note</button>`
+                    : `<label class="upload-note-btn" style="cursor:pointer;">
+                           Upload Note
+                           <input type="file" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="uploadNote(${r.id}, this)">
+                       </label>`
+                : "—";
+
+            return `
+                <tr>
+                    <td>${r.leave_type}</td>
+                    <td>${r.start_date}</td>
+                    <td>${r.end_date}</td>
+                    <td>${Number(r.days).toFixed(2)}</td>
+                    <td><span class="badge ${r.status}">${r.status}</span></td>
+                    <td>${noteBtn}</td>
+                    <td title="${r.reason || ""}">
+                    ${(r.reason || "—").length > 25
+                        ? (r.reason.substring(0, 25) + "...")
+                        : (r.reason || "—")}
+                    </td>
+                </tr>
+            `;
+        }).join("");
+
+    } catch (error) {
+        if (error.message === "Unauthorized") return;
+        console.error(error);
+        document.getElementById("requests").innerHTML =
+            "<tr><td colspan='6' class='empty'>Failed to load requests</td></tr>";
+    }
+}
+
+async function applyLeave() {
+    const leaveType = document.getElementById("leaveType").value;
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const dayPortion = parseFloat(document.getElementById("dayPortion").value);
+
+    
+    if (!startDate || !endDate) {
+        alert("Please select start and end dates");
+        return;
+    }
+
+    if (endDate < startDate) {
+        alert("End date cannot be before start date");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${BASE}/leave-request`, {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({
+                leave_type: leaveType,
+                start_date: startDate,
+                end_date: endDate,
+                day_portion: dayPortion,
+                reason: document.getElementById("leaveReason").value.trim() || null
+            })
+        });
+
+        const data = await handleApiResponse(res);
+
+        if (!res.ok) {
+            alert(data.detail || "Failed to submit leave request");
+            return;
+        }
+
+        if (leaveType === "Sick") {
+            const fileInput = document.getElementById("doctorNote");
+            if (fileInput && fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append("file", fileInput.files[0]);
+
+                const uploadRes = await fetch(`${BASE}/upload-doctor-note/${data.leave_id}`, {
+                    method: "POST",
+                    headers: authHeadersNoContent(),
+                    body: formData
+                });
+
+                const uploadData = await handleApiResponse(uploadRes);
+
+                if (!uploadRes.ok) {
+                    alert(uploadData.detail || "Leave was submitted, but doctor's note upload failed.");
+                    return;
+                }
+
+                fileInput.value = "";
+            }
+        }
+
+        alert("Leave submitted successfully!");
+        document.getElementById("startDate").value = "";
+        document.getElementById("endDate").value = "";
+        document.getElementById("leaveType").value = "Annual";
+        document.getElementById("dayPortion").value = "1";
+        document.getElementById("dayPortion").disabled = false;
+        document.getElementById("doctorNote").value = "";
+        document.getElementById("doctorNoteWrap").classList.add("hidden");
+
+        toggleDoctorNote();
+        toggleDayPortion();
+        loadRequests();
+        getBalance();
+
+    } catch (error) {
+        if (error.message === "Unauthorized") return;
+        console.error(error);
+        alert("Server error while submitting leave");
+    }
+    
+    
+}
+
+async function uploadNote(leaveId, input) {
+    if (!input.files.length) return;
+
+    const formData = new FormData();
+    formData.append("file", input.files[0]);
+
+    try {
+        const res = await fetch(`${BASE}/upload-doctor-note/${leaveId}`, {
+            method: "POST",
+            headers: authHeadersNoContent(),
+            body: formData
+        });
+
+        const data = await handleApiResponse(res);
+
+        if (!res.ok) {
+            alert(data.detail || "Failed to upload note");
+            return;
+        }
+
+        alert("Doctor's note uploaded successfully!");
+        loadRequests();
+    } catch (error) {
+        if (error.message === "Unauthorized") return;
+        console.error(error);
+        alert("Server error while uploading note");
+    }
+}
+
+async function viewDoctorNote(leaveId) {
+    try {
+
+        const res = await fetch(`${BASE}/doctor-note/${leaveId}`, {
+            headers: authHeadersNoContent()
+        });
+
+        if (!res.ok) {
+            alert("Could not open doctor's note");
+            return;
+        }
+
+        const blob = await res.blob();
+
+        const fileURL = URL.createObjectURL(blob);
+
+        window.open(fileURL, "_blank");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Server error while opening doctor's note");
+    }
+}
+
+</script>
+
+</body>
+</html>

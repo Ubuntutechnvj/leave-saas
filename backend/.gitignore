@@ -1,0 +1,23 @@
+# Environment variables — never share these
+.env
+
+# Virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Uploaded doctor's notes
+uploads/
+
+# Database
+*.db
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

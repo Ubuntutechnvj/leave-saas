@@ -1,0 +1,4 @@
+temp-clone/
+venv/
+_pycache_/
+*.pyc
