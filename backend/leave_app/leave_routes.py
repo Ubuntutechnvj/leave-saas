@@ -898,6 +898,7 @@ def get_all_leave_requests(db: Session = Depends(get_db)):
             "employee_name": employee.name if employee else None,
             "employee_code": employee.employee_code if employee else None,
             "company_name": company.name if company else None,
+            "department": employee.department if employee else None,
             "leave_type": leave.leave_type,
             "start_date": str(leave.start_date),
             "end_date": str(leave.end_date),
@@ -2057,6 +2058,39 @@ def download_team_leave_report(
             "Content-Disposition": f"attachment; filename=team_leave_report_{start_date}_to_{end_date}.csv"
         }
     )
+
+@router.get("/company-calendar")
+def get_company_calendar(
+    year: int,
+    month: int,
+    current_user: Employee = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    if month < 1 or month > 12:
+        raise HTTPException(status_code=400, detail="Month must be between 1 and 12")
+
+    first_day = date(year, month, 1)
+    last_day = date(year, month, monthrange(year, month)[1])
+
+    leaves = db.query(LeaveRequest).options(joinedload(LeaveRequest.employee)).filter(
+        LeaveRequest.status == "APPROVED",
+        LeaveRequest.start_date <= last_day,
+        LeaveRequest.end_date >= first_day
+    ).all()
+
+    return [
+        {
+            "id": l.id,
+            "employee_id": l.employee_id,
+            "employee_name": l.employee.name if l.employee else "Unknown",
+            "leave_type": l.leave_type,
+            "start_date": str(l.start_date),
+            "end_date": str(l.end_date),
+            "days": l.days,
+            "leave_code": l.leave_code,
+        }
+        for l in leaves
+    ]
 
 @router.put("/leave-request/{request_id}/amend")
 def amend_pending_leave(
