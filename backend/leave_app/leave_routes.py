@@ -17,6 +17,7 @@ from dateutil.relativedelta import relativedelta
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 
 import holidays
+from datetime import timedelta
 from fastapi import HTTPException
 
 import os
@@ -54,14 +55,14 @@ UPLOAD_DIR = os.path.join(
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 email_config = ConnectionConfig(
-    MAIL_USERNAME=os.environ["MAIL_USERNAME"],
+    MAIL_USERNAME=os.getenv("MAIL_USERNAME", ""),
     MAIL_PASSWORD=os.getenv("MAIL_PASSWORD", ""),
-    MAIL_FROM=os.getenv("MAIL_FROM", ""),
+    MAIL_FROM=os.getenv("MAIL_FROM", "noreply@example.com"),
     MAIL_PORT=int(os.getenv("MAIL_PORT", 587)),
     MAIL_SERVER=os.getenv("MAIL_SERVER", "smtp.office365.com"),
     MAIL_STARTTLS=True,
     MAIL_SSL_TLS=False,
-    USE_CREDENTIALS=True,
+    USE_CREDENTIALS=bool(os.getenv("MAIL_USERNAME") and os.getenv("MAIL_PASSWORD")),
 )
 
 # =====================================================
@@ -735,8 +736,6 @@ def get_leave_requests_for_employee(
         }
         for r in requests
     ]
-
-from datetime import timedelta
 
 # =====================================================
 # CREATE LEAVE REQUEST
