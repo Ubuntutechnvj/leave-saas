@@ -480,18 +480,14 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 # Temp pass
 # =====================================================
 
-from .auth import verify_password
+from .auth import hash_password
 
-@router.get("/test-password")
-def test_password():
-    hashed = "$2b$12$c2aVtzs5HNxhzIwTobdJA.8YgZwZpvKAFSgg9owZcdieImOPIwQnC"
-
+@router.get("/generate-password")
+def generate_password():
     return {
-        "Password123!": verify_password("Password123!", hashed),
-        "admin123": verify_password("admin123", hashed),
-        "password": verify_password("password", hashed),
-        "123456": verify_password("123456", hashed),
+        "hash": hash_password("Password123!")
     }
+
 
 @router.get("/overtime-off")
 def get_overtime_off(
