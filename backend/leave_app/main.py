@@ -32,6 +32,7 @@ origins = [
     "https://leave-saas.vercel.app",
     "https://leave-saas-6xnzrutbu-ubuntu2.vercel.app",
     "https://leave-saas-git-main-ubuntu2.vercel.app",
+    "https://leave-saas-id3s0rppd-ubuntu2.vercel.app",
 ]
 
 app.add_middleware(
