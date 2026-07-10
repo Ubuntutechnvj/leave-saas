@@ -476,6 +476,23 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         "role": user.role
     }
 
+# =====================================================
+# Temp pass
+# =====================================================
+
+from .auth import verify_password
+
+@router.get("/test-password")
+def test_password():
+    hashed = "$2b$12$c2aVtzs5HNxhzIwTobdJA.8YgZwZpvKAFSgg9owZcdieImOPIwQnC"
+
+    return {
+        "Password123!": verify_password("Password123!", hashed),
+        "admin123": verify_password("admin123", hashed),
+        "password": verify_password("password", hashed),
+        "123456": verify_password("123456", hashed),
+    }
+
 @router.get("/overtime-off")
 def get_overtime_off(
     current_user: Employee = Depends(require_hr_or_admin),
