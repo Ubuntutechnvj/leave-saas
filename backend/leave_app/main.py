@@ -1,10 +1,8 @@
-from .database import engine
-print("APP DB:", engine.url)
-
+import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles 
 
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from .leave_routes import router as leave_router
@@ -23,6 +21,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 origins = [

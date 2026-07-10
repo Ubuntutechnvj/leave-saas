@@ -10,4 +10,4 @@ python-dateutil
 openpyxl
 python-multipart
 holidays
-passlib
+passlib[bcrypt]

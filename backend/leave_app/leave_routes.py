@@ -17,7 +17,6 @@ from dateutil.relativedelta import relativedelta
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 
 import holidays
-from datetime import timedelta
 from fastapi import HTTPException
 
 import os
@@ -55,7 +54,7 @@ UPLOAD_DIR = os.path.join(
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 email_config = ConnectionConfig(
-    MAIL_USERNAME=os.getenv("MAIL_USERNAME", ""),
+    MAIL_USERNAME=os.environ["MAIL_USERNAME"],
     MAIL_PASSWORD=os.getenv("MAIL_PASSWORD", ""),
     MAIL_FROM=os.getenv("MAIL_FROM", ""),
     MAIL_PORT=int(os.getenv("MAIL_PORT", 587)),
@@ -880,7 +879,10 @@ def get_pending_approvals(
 
 
 @router.get("/all-leave-requests")
-def get_all_leave_requests(db: Session = Depends(get_db)):
+def get_all_leave_requests(
+    current_user: Employee = Depends(require_hr_or_admin),
+    db: Session = Depends(get_db)
+):
 
     leaves = db.query(LeaveRequest).all()
 
@@ -1727,7 +1729,8 @@ def upload_doctor_note(
     leave.doctor_note_path = file_path
     db.commit()
 
-    return {"message": "Doctor note uploaded successfully", "file_path": file_path}
+    return {"message": "Doctor note uploaded successfully"
+}
 
 
 @router.get("/doctor-note/{leave_id}")

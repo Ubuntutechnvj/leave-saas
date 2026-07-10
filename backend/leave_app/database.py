@@ -3,13 +3,12 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
 
-# Load environment variables from .env file
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL is not set in your .env file")
+    raise RuntimeError("DATABASE_URL is not set. Add it to your .env file locally and Render Environment Variables online.")
 
 engine = create_engine(
     DATABASE_URL,
